@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using RentalApp.Models;
-using RentalApp.Models;
 using System;
 using System.Threading.Tasks;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentalApp.DTOs;
+using RentalApp.Models;
 using RentalApp.Services;
 using System.Threading.Tasks;
 

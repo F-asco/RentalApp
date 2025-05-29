@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using RentalApp.DTOs;
 using RentalApp.Models;
-using RentalApp.DTOs;
-using RentalApp.Models;
 using System.Threading.Tasks;
 
 namespace RentalApp.Services
