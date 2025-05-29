@@ -1,0 +1,14 @@
+﻿@model RentalApp.DTOs.EquipmentDto
+<h2>Dodaj sprzęt</h2>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All"></div>
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label asp-for="Description"></label>
+        <textarea asp-for="Description"></textarea>
+    </div>
+    <button type="submit">Zapisz</button>
+</form>

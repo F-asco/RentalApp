@@ -1,0 +1,19 @@
+﻿@model IEnumerable<RentalApp.Models.Equipment>
+<h2>Sprzęt</h2>
+<p><a asp-action="Create">Dodaj nowy</a></p>
+<table>
+    <thead><tr><th>Nazwa</th><th>Opis</th><th>Akcje</th></tr></thead>
+    <tbody>
+        @foreach (var e in Model)
+        {
+            <tr>
+                <td>@e.Name</td>
+                <td>@e.Description</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@e.Id">Edytuj</a> |
+                    <a asp-action="Delete" asp-route-id="@e.Id">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,18 @@
+﻿@model RentalApp.Models.Rental
+@{
+    ViewData["Title"] = "Zwróć sprzęt";
+}
+<h2>@ViewData["Title"]</h2>
+<div class="alert alert-info">
+    <p>Czy na pewno chcesz zwrócić następujący sprzęt?</p>
+    <ul>
+        <li><strong>Sprzęt:</strong> @Model.Equipment.Name</li>
+        <li><strong>Użytkownik:</strong> @Model.User.UserName</li>
+        <li><strong>Wypożyczono:</strong> @Model.RentedAt.ToLocalTime().ToString("g")</li>
+    </ul>
+</div>
+<form asp-action="Return" method="post">
+    <input asp-for="Id" type="hidden" />
+    <button type="submit" class="btn btn-success">Potwierdź zwrot</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

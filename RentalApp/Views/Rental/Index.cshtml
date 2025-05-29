@@ -1,0 +1,39 @@
+﻿@model IEnumerable<RentalApp.Models.Rental>
+@{
+    ViewData["Title"] = "Wypożyczenia";
+}
+<h2>@ViewData["Title"]</h2>
+<p>
+    <a asp-action="Rent" class="btn btn-success">Nowe wypożyczenie</a>
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Sprzęt</th>
+            <th>Użytkownik</th>
+            <th>Data wypożyczenia</th>
+            <th>Data zwrotu</th>
+            <th>Akcje</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Equipment.Name</td>
+                <td>@r.User.UserName</td>
+                <td>@r.RentedAt.ToLocalTime().ToString("g")</td>
+                <td>@(r.ReturnedAt.HasValue ? r.ReturnedAt.Value.ToLocalTime().ToString("g") : "-")</td>
+                <td>
+                    @if (!r.ReturnedAt.HasValue)
+                    {
+                        <form asp-action="Return" method="post" style="display:inline">
+                            <input type="hidden" name="id" value="@r.Id" />
+                            <button type="submit" class="btn btn-warning btn-sm">Zwróć</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
