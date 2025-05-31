@@ -12,8 +12,8 @@ using RentalApp.Data;
 namespace RentalApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250529170512_InitialMvcSetup")]
-    partial class InitialMvcSetup
+    [Migration("20250531214223_AddCategoryAndQuantityToEquipment")]
+    partial class AddCategoryAndQuantityToEquipment
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,6 +231,10 @@ namespace RentalApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -240,6 +244,9 @@ namespace RentalApp.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("QuantityAvailable")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -335,7 +342,7 @@ namespace RentalApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("RentalApp.Models.ApplicationUser", "Użytkownik")
+                    b.HasOne("RentalApp.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -343,7 +350,7 @@ namespace RentalApp.Data.Migrations
 
                     b.Navigation("Equipment");
 
-                    b.Navigation("Użytkownik");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RentalApp.Models.Equipment", b =>

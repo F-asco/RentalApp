@@ -1,0 +1,13 @@
+﻿@model RentalApp.DTOs.EquipmentDto
+
+<h2>Usuń sprzęt</h2>
+
+<div class="alert alert-danger">
+    Czy na pewno chcesz usunąć <strong>@Model.Name</strong>?
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Name" />
+    <button type="submit" class="btn btn-danger">Tak, usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

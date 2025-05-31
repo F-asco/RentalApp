@@ -45,7 +45,7 @@ using (var scope = app.Services.CreateScope())
 {
     await SeedData.Initialize(
         scope.ServiceProvider,
-        roles: new[] { "Admin", "Employee", "User" },
+        roles: new[] { "Admin", "Pracownik", "U¿ytkownik" },
         adminEmail: "admin@localhost",
         adminPassword: "Has³o123!");
 }

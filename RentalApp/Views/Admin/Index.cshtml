@@ -1,0 +1,18 @@
+﻿@model List<RentalApp.Models.ApplicationUser>
+
+<h2>Użytkownicy</h2>
+<table>
+    <tr>
+        <th>Email</th>
+        <th>Akcje</th>
+    </tr>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>
+                <a asp-action="ManageRoles" asp-route-userId="@user.Id">Zarządzaj rolami</a>
+            </td>
+        </tr>
+    }
+</table>

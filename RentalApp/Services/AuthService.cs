@@ -19,7 +19,13 @@ namespace RentalApp.Services
         public async Task<IdentityResult> RegisterAsync(RegisterDto dto)
         {
             var user = new ApplicationUser { UserName = dto.Email, Email = dto.Email };
-            return await _userManager.CreateAsync(user, dto.Password);
+            var result = await _userManager.CreateAsync(user, dto.Password);
+            if (result.Succeeded)
+            {
+                // Domyœlnie przypisz u¿ytkownika do roli "User"
+                await _userManager.AddToRoleAsync(user, "U¿ytkownik");
+            }
+            return result;
         }
 
         public async Task<SignInResult> LoginAsync(LoginDto dto)

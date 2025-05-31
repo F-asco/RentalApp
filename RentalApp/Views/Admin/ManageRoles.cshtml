@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+@{
+    var user = ViewBag.User as RentalApp.Models.ApplicationUser;
+    var userRoles = ViewBag.UserRoles as IList<string>;
+}
+
+@if (user == null)
+{
+    <div class="alert alert-danger">Nie znaleziono użytkownika.</div>
+}
+else
+{
+    <h2>Zarządzanie rolami dla <strong>@user.Email</strong></h2>
+
+    <form asp-action="AddRole" method="post">
+        <input type="hidden" name="userId" value="@user.Id" />
+        <div class="form-group">
+            <label>Dodaj nową rolę:</label>
+            <select class="form-control" name="role">
+                @foreach (var role in Model)
+                {
+                    if (!userRoles.Contains(role.Name))
+                    {
+                        <option value="@role.Name">@role.Name</option>
+                    }
+                }
+            </select>
+        </div>
+        <button class="btn btn-primary mt-2" type="submit">Dodaj rolę</button>
+    </form>
+
+    <h3 class="mt-4">Aktualne role:</h3>
+    <ul class="list-group">
+        @foreach (var role in userRoles)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                @role
+                <form asp-action="RemoveRole" method="post" class="d-inline">
+                    <input type="hidden" name="userId" value="@user.Id" />
+                    <input type="hidden" name="role" value="@role" />
+                    <button class="btn btn-danger btn-sm">Usuń</button>
+                </form>
+            </li>
+        }
+    </ul>
+}

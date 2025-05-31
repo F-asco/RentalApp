@@ -19,6 +19,7 @@ namespace RentalApp.Controllers
             return View(list);
         }
 
+        [Authorize(Roles = "Admin,Pracownik")]
         public IActionResult Create() => View();
         [HttpPost]
         public async Task<IActionResult> Create(EquipmentDto dto)
@@ -27,6 +28,38 @@ namespace RentalApp.Controllers
             await _svc.CreateAsync(dto);
             return RedirectToAction(nameof(Index));
         }
-        // Edit/Delete analogicznie
+
+        [Authorize(Roles = "Admin,Pracownik")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var item = await _svc.GetByIdAsync(id);
+            if (item == null) return NotFound();
+            return View(item);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin,Pracownik")]
+        public async Task<IActionResult> Edit(int id, EquipmentDto dto)
+        {
+            if (!ModelState.IsValid) return View(dto);
+            await _svc.UpdateAsync(id, dto);
+            return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin,Pracownik")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var item = await _svc.GetByIdAsync(id);
+            if (item == null) return NotFound();
+            return View(item);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin,Pracownik")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _svc.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

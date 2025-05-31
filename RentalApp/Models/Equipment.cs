@@ -14,7 +14,11 @@ namespace RentalApp.Models
         [MaxLength(500)]
         public string Description { get; set; }
 
-        // Navigation property - list of rentals for this equipment
+        public string Category { get; set; } 
+
+        [Range(0, int.MaxValue)]
+        public int QuantityAvailable { get; set; }
+
         public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
     }
 }
