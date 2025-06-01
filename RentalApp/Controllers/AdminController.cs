@@ -27,9 +27,13 @@ namespace RentalApp.Controllers
             _roleManager = roleManager;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string searchEmail)
         {
-            var users = _userManager.Users.ToList();
+            var users = string.IsNullOrEmpty(searchEmail)
+                ? _userManager.Users.ToList()
+                : _userManager.Users.Where(u => u.Email.Contains(searchEmail)).ToList();
+
+            ViewBag.SearchEmail = searchEmail;
             return View(users);
         }
 
