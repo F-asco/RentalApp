@@ -77,12 +77,20 @@ namespace RentalApp.Controllers
                 .ToList();
 
             var total = _db.Rentals.Count();
-            var onTime = _db.Rentals.Count(r => r.ReturnedAt <= r.DueDate);
-            var late = _db.Rentals.Count(r => r.ReturnedAt > r.DueDate);
+            var onTime = _db.Rentals.Count(r => r.ReturnedAt <= r.DueDate && r.IsReturned);
+            var late = _db.Rentals.Count(r => r.ReturnedAt > r.DueDate && r.IsReturned);
+
+            var usersCount = _db.Users.Count();
+            var activeRentals = _db.Rentals.Count(r => !r.IsReturned);
+            var thisMonthRentals = _db.Rentals.Count(r =>
+                r.RentDate.Month == DateTime.Now.Month && r.RentDate.Year == DateTime.Now.Year);
 
             ViewBag.MostRented = mostRented;
             ViewBag.OnTimePercent = total > 0 ? (onTime * 100) / total : 0;
             ViewBag.LatePercent = total > 0 ? (late * 100) / total : 0;
+            ViewBag.UsersCount = usersCount;
+            ViewBag.ActiveRentals = activeRentals;
+            ViewBag.ThisMonthRentals = thisMonthRentals;
 
             return View();
         }
@@ -91,21 +99,16 @@ namespace RentalApp.Controllers
 
         public IActionResult CreateCategory()
         {
-            return View(new EquipmentCategory()); 
+            return View("CreateCategory", new EquipmentCategory());
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCategory(EquipmentCategory cat)
         {
-            if (!ModelState.IsValid)
-                return View(cat);
-
-            // Unikalność
             if (_db.EquipmentCategories.Any(c => c.Name == cat.Name))
             {
                 ModelState.AddModelError("Name", "Taka kategoria już istnieje.");
-                return View(cat);
+                return View("CreateCategory", cat);
             }
 
             _db.EquipmentCategories.Add(cat);
@@ -113,34 +116,36 @@ namespace RentalApp.Controllers
             return RedirectToAction("Categories");
         }
 
-        [HttpGet]
-        public IActionResult EditCategory(int id)
+
+
+        public async Task<IActionResult> EditCategory(int id)
         {
-            var category = _db.EquipmentCategories.Find(id);
-            if (category == null) return NotFound();
-            return View("CreateCategory", category);
+            var cat = await _db.EquipmentCategories.FindAsync(id);
+            if (cat == null) return NotFound();
+            return View("CreateCategory", cat);
         }
 
         [HttpPost]
         public async Task<IActionResult> EditCategory(EquipmentCategory cat)
         {
-            if (!ModelState.IsValid)
-                return View("CreateCategory", cat);
-
-            // Walidacja unikalności
-            bool exists = _db.EquipmentCategories
-                .Any(c => c.Id != cat.Id && c.Name.ToLower() == cat.Name.ToLower());
-
-            if (exists)
+            if (_db.EquipmentCategories.Any(c => c.Name == cat.Name && c.Id != cat.Id))
             {
                 ModelState.AddModelError("Name", "Taka kategoria już istnieje.");
                 return View("CreateCategory", cat);
             }
 
-            _db.EquipmentCategories.Update(cat);
+            if (!ModelState.IsValid)
+                return View("CreateCategory", cat);
+
+            var existing = await _db.EquipmentCategories.FindAsync(cat.Id);
+            if (existing == null) return NotFound();
+
+            existing.Name = cat.Name;
             await _db.SaveChangesAsync();
+
             return RedirectToAction("Categories");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> DeleteCategory(int id)

@@ -20,12 +20,40 @@ namespace RentalApp.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string searchName, string category, bool? availableOnly, string sortOrder)
         {
-            var list = await _svc.GetAllAsync();
-            return View(list);
-        }
+            var equipment = _context.Equipment.Include(e => e.Category).AsQueryable();
 
+            // Filtrowanie
+            if (!string.IsNullOrEmpty(searchName))
+                equipment = equipment.Where(e => e.Name.Contains(searchName));
+
+            if (!string.IsNullOrEmpty(category))
+                equipment = equipment.Where(e => e.Category.Name == category);
+
+            if (availableOnly == true)
+                equipment = equipment.Where(e => e.IsAvailable);
+
+            // Sortowanie
+            ViewBag.NameSort = sortOrder == "name" ? "name_desc" : "name";
+            ViewBag.DateSort = sortOrder == "date" ? "date_desc" : "date";
+
+            equipment = sortOrder switch
+            {
+                "name" => equipment.OrderBy(e => e.Name),
+                "name_desc" => equipment.OrderByDescending(e => e.Name),
+                "date" => equipment.OrderBy(e => e.CreatedAt),
+                "date_desc" => equipment.OrderByDescending(e => e.CreatedAt),
+                _ => equipment.OrderBy(e => e.Name) 
+            };
+
+            ViewBag.Categories = _context.EquipmentCategories
+                .Select(c => c.Name)
+                .Distinct()
+                .ToList();
+
+            return View(equipment.ToList());
+        }
         [Authorize(Roles = "Admin,Pracownik")]
         public async Task<IActionResult> Create()
         {

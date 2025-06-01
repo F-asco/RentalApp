@@ -1,17 +1,57 @@
-﻿
-@model IEnumerable<RentalApp.Models.Equipment>
-<h2>Sprzęt</h2>
+﻿@model IEnumerable<RentalApp.Models.Equipment>
+@{
+    ViewData["Title"] = "Sprzęt";
+    var query = Context.Request.Query;
+}
+
+<h2>@ViewData["Title"]</h2>
+
 @if (User.IsInRole("Admin") || User.IsInRole("Pracownik"))
 {
     <a asp-action="Create" class="btn btn-success mb-3">Dodaj nowy sprzęt</a>
 }
+
+<!-- Formularz filtrowania -->
+<form method="get" asp-action="Index" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-3">
+            <input type="text" name="searchName" class="form-control" placeholder="Szukaj po nazwie" value="@query["searchName"]" />
+        </div>
+        <div class="col-md-3">
+            <select name="category" class="form-select">
+                <option value="">-- Wszystkie kategorie --</option>
+                @foreach (var cat in ViewBag.Categories)
+                {
+                    <option value="@cat" selected="@(query["category"] == cat ? "selected" : null)">
+                        @cat
+                    </option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2 form-check">
+            <input type="checkbox" class="form-check-input" name="availableOnly" value="true"
+            @(query["availableOnly"] == "true" ? "checked" : "") />
+            <label class="form-check-label">Tylko dostępne</label>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtruj</button>
+        </div>
+    </div>
+</form>
+
+<!-- Tabela sprzętu -->
 <table class="table">
     <thead>
         <tr>
-            <th>Nazwa</th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.NameSort">Nazwa</a>
+            </th>
             <th>Opis</th>
             <th>Kategoria</th>
             <th>Ilość dostępnych szt.</th>
+            <th>
+                <a asp-action="Index" asp-route-sortOrder="@ViewBag.DateSort">Data dodania</a>
+            </th>
             <th>Dostępność</th>
             <th></th>
         </tr>
@@ -22,15 +62,9 @@
             <tr>
                 <td>@item.Name</td>
                 <td>@item.Description</td>
-                <td>@item.Category</td>
+                <td>@item.Category?.Name</td>
                 <td>@item.QuantityAvailable</td>
-                <td>
-                    @if (User.IsInRole("Admin") || User.IsInRole("Pracownik"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edytuj</a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Usuń</a>
-                    }
-                </td>
+                <td>@item.CreatedAt.ToShortDateString()</td>
                 <td>
                     @if (item.IsAvailable)
                     {
@@ -39,6 +73,13 @@
                     else
                     {
                         <span class="badge bg-danger">Niedostępny</span>
+                    }
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Pracownik"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edytuj</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Usuń</a>
                     }
                 </td>
             </tr>

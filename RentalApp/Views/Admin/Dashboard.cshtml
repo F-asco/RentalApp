@@ -1,10 +1,27 @@
-
 @{
     ViewData["Title"] = "Panel administratora";
 }
+
 <h2>@ViewData["Title"]</h2>
 
-<h4>Top 5 najczęściej wypożyczanych</h4>
+<!-- Statystyki ogólne -->
+<div style="display: flex; gap: 20px; margin-bottom: 30px;">
+    <div style="flex: 1; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+        <h4>👥 Liczba użytkowników</h4>
+        <p style="font-size: 1.5rem;">@ViewBag.UsersCount</p>
+    </div>
+    <div style="flex: 1; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+        <h4>📦 Aktywne wypożyczenia</h4>
+        <p style="font-size: 1.5rem;">@ViewBag.ActiveRentals</p>
+    </div>
+    <div style="flex: 1; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+        <h4>📆 Wypożyczenia w tym miesiącu</h4>
+        <p style="font-size: 1.5rem;">@ViewBag.ThisMonthRentals</p>
+    </div>
+</div>
+
+<!-- Najczęściej wypożyczane -->
+<h4>🏅 Top 5 najczęściej wypożyczanych sprzętów</h4>
 <ul>
     @foreach (var item in ViewBag.MostRented)
     {
@@ -12,8 +29,9 @@
     }
 </ul>
 
-<h4>Statystyki zwrotów</h4>
+<!-- Statystyki zwrotów -->
+<h4>⏳ Statystyki zwrotów</h4>
 <ul>
-    <li>Zwroty w terminie: @ViewBag.OnTimePercent%</li>
-    <li>Zwroty po terminie: @ViewBag.LatePercent%</li>
+    <li>Zwroty w terminie: <strong>@ViewBag.OnTimePercent%</strong></li>
+    <li>Zwroty po terminie: <strong>@ViewBag.LatePercent%</strong></li>
 </ul>

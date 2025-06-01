@@ -24,8 +24,9 @@ namespace RentalApp.Models
         public bool IsAvailable => QuantityAvailable > 0;
 
         public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
-        
-       
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+
 
     }
 }
