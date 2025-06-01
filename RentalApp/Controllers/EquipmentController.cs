@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RentalApp.DTOs;
 using RentalApp.Services;
-using RentalApp.DTOs;
 using System.Threading.Tasks;
 
 namespace RentalApp.Controllers

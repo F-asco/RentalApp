@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RentalApp.DTOs;
 using RentalApp.Services;
-using RentalApp.Models;
+using System;
 
 namespace RentalApp.Controllers
 {
@@ -20,40 +20,85 @@ namespace RentalApp.Controllers
             _equipmentService = equipmentService;
         }
 
-        // Wyświetla listę wszystkich wypożyczeń
+        // Widok wszystkich wypożyczeń (dla pracownika/admina) lub tylko swoich (dla użytkownika)
         public async Task<IActionResult> Index()
         {
-            var rentals = await _rentalService.GetAllAsync();
-            return View(rentals);
+            if (User.IsInRole("Admin") || User.IsInRole("Pracownik"))
+            {
+                var allRentals = await _rentalService.GetAllAsync();
+                return View(allRentals);
+            }
+            else
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userRentals = await _rentalService.GetByUserIdAsync(userId);
+                return View(userRentals);
+            }
         }
 
-        // Pokazuje formularz wypożyczenia (lista dostępnego sprzętu)
+        // Formularz wypożyczenia sprzętu
         public async Task<IActionResult> Rent()
         {
             var equipmentList = await _equipmentService.GetAllAsync();
             return View(equipmentList);
         }
 
-        // Obsługuje akcję wypożyczenia
+        // Obsługa wypożyczenia (dla użytkownika/pracownika/admina)
         [HttpPost]
-        public async Task<IActionResult> Rent(int equipmentId)
+        [Authorize(Roles = "Użytkownik,Pracownik,Admin")]
+        public async Task<IActionResult> Create(int equipmentId, int rentalPeriod)
         {
+            var equipment = await _equipmentService.GetByIdAsync(equipmentId);
+            if (equipment == null || equipment.QuantityAvailable <= 0)
+            {
+                TempData["Error"] = "Sprzęt jest niedostępny.";
+                return RedirectToAction("Rent");
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var dto = new RentalDto
             {
                 EquipmentId = equipmentId,
-                UserId = userId
+                UserId = userId,
+                RentDate = DateTime.Now,
+                DueDate = DateTime.Now.AddDays(rentalPeriod),
+                IsReturned = false
             };
+
             await _rentalService.RentAsync(dto);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("MyRentals");
         }
 
-        // Zwraca sprzęt
+        // Lista wypożyczeń zalogowanego użytkownika
+        public async Task<IActionResult> MyRentals()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var rentals = await _rentalService.GetByUserIdAsync(userId);
+            return View("Index", rentals);
+        }
+
+        // Zwracanie sprzętu
         [HttpPost]
         public async Task<IActionResult> Return(int id)
         {
             await _rentalService.ReturnAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Admin,Pracownik")]
+        [HttpPost]
+        public async Task<IActionResult> Approve(int id)
+        {
+            await _rentalService.ApproveAsync(id);
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Admin,Pracownik")]
+        [HttpPost]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            await _rentalService.CancelAsync(id);
+            return RedirectToAction("Index");
         }
     }
 }

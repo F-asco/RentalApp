@@ -12,18 +12,24 @@ namespace RentalApp.Models
         [Required]
         [ForeignKey("Equipment")]
         public int EquipmentId { get; set; }
-
         public Equipment Equipment { get; set; }
 
         [Required]
         public string UserId { get; set; }
-
-        // Navigation property to the user
         public ApplicationUser User { get; set; }
 
         [Required]
-        public DateTime RentedAt { get; set; }
+        public DateTime RentDate { get; set; } = DateTime.Now;
+
+        public DateTime DueDate { get; set; } 
+
+        public bool IsReturned { get; set; } = false;
 
         public DateTime? ReturnedAt { get; set; }
+        public bool IsApproved { get; set; } = false;
+        public bool IsCanceled { get; set; } = false;
+
+        [NotMapped]
+        public bool IsOverdue => !IsReturned && DueDate < DateTime.Now;
     }
 }

@@ -69,7 +69,7 @@ namespace RentalApp.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     EquipmentId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RentedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RentDate= table.Column<DateTime>(type: "datetime2", nullable: false),
                     ReturnedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>

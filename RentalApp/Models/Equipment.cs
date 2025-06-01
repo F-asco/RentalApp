@@ -11,14 +11,21 @@ namespace RentalApp.Models
         [MaxLength(100)]
         public string Name { get; set; }
 
+        public int CategoryId { get; set; }
+
+        public EquipmentCategory Category { get; set; }
+        
         [MaxLength(500)]
         public string Description { get; set; }
-
-        public string Category { get; set; } 
 
         [Range(0, int.MaxValue)]
         public int QuantityAvailable { get; set; }
 
+        public bool IsAvailable => QuantityAvailable > 0;
+
         public ICollection<Rental> Rentals { get; set; } = new List<Rental>();
+        
+       
+
     }
 }

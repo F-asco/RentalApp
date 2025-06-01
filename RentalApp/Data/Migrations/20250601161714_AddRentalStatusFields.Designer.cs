@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RentalApp.Data;
 
@@ -11,9 +12,11 @@ using RentalApp.Data;
 namespace RentalApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250601161714_AddRentalStatusFields")]
+    partial class AddRentalStatusFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -228,8 +231,9 @@ namespace RentalApp.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -246,26 +250,7 @@ namespace RentalApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("Equipment");
-                });
-
-            modelBuilder.Entity("RentalApp.Models.EquipmentCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EquipmentCategories");
                 });
 
             modelBuilder.Entity("RentalApp.Models.Rental", b =>
@@ -281,12 +266,6 @@ namespace RentalApp.Data.Migrations
 
                     b.Property<int>("EquipmentId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsApproved")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCanceled")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsReturned")
                         .HasColumnType("bit");
@@ -361,17 +340,6 @@ namespace RentalApp.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RentalApp.Models.Equipment", b =>
-                {
-                    b.HasOne("RentalApp.Models.EquipmentCategory", "Category")
-                        .WithMany("Equipment")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
             modelBuilder.Entity("RentalApp.Models.Rental", b =>
                 {
                     b.HasOne("RentalApp.Models.Equipment", "Equipment")
@@ -394,11 +362,6 @@ namespace RentalApp.Data.Migrations
             modelBuilder.Entity("RentalApp.Models.Equipment", b =>
                 {
                     b.Navigation("Rentals");
-                });
-
-            modelBuilder.Entity("RentalApp.Models.EquipmentCategory", b =>
-                {
-                    b.Navigation("Equipment");
                 });
 #pragma warning restore 612, 618
         }

@@ -17,17 +17,18 @@ namespace RentalApp.Services
 
         public async Task<EquipmentDto> GetByIdAsync(int id) 
             {
-            var item = await _db.Equipment.FindAsync(id);
+            var item = await _db.Equipment.Include(e => e.Category).FirstOrDefaultAsync(e => e.Id == id);
             if (item == null) return null;
 
             return new EquipmentDto
             {
                 Name = item.Name,
                 Description = item.Description,
-                Category = item.Category,
+                CategoryId = item.CategoryId, 
                 QuantityAvailable = item.QuantityAvailable
             };
-            }
+        }
+
         public async Task UpdateAsync(int id, EquipmentDto dto) 
         {
             var item = await _db.Equipment.FindAsync(id);
@@ -35,7 +36,8 @@ namespace RentalApp.Services
 
             item.Name = dto.Name;
             item.Description = dto.Description;
-            item.Category = dto.Category;
+            item.CategoryId = dto.CategoryId; 
+
             item.QuantityAvailable = dto.QuantityAvailable;
 
             _db.Equipment.Update(item);
@@ -51,11 +53,16 @@ namespace RentalApp.Services
         }
         public async Task CreateAsync(EquipmentDto dto)
         {
-            var e = new Equipment { Name = dto.Name, Description = dto.Description };
+            var e = new Equipment
+            {
+                Name = dto.Name,
+                Description = dto.Description,
+                CategoryId = dto.CategoryId, 
+                QuantityAvailable = dto.QuantityAvailable
+            };
+
             _db.Equipment.Add(e);
             await _db.SaveChangesAsync();
         }
-
-        // Edit, Delete – analogicznie
     }
 }

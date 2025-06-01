@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace RentalApp.DTOs
 {
@@ -13,7 +14,12 @@ namespace RentalApp.DTOs
         public string UserId { get; set; }
 
         [Required]
-        public DateTime RentedAt { get; set; }
+        public DateTime RentDate { get; set; } = DateTime.Now;
+
+        [Required]
+        public DateTime DueDate { get; set; }
+
+        public bool IsReturned { get; set; }
 
         public DateTime? ReturnedAt { get; set; }
     }

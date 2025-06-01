@@ -1,0 +1,19 @@
+
+@{
+    ViewData["Title"] = "Panel administratora";
+}
+<h2>@ViewData["Title"]</h2>
+
+<h4>Top 5 najczęściej wypożyczanych</h4>
+<ul>
+    @foreach (var item in ViewBag.MostRented)
+    {
+        <li>@item.Name - @item.Count wypożyczeń</li>
+    }
+</ul>
+
+<h4>Statystyki zwrotów</h4>
+<ul>
+    <li>Zwroty w terminie: @ViewBag.OnTimePercent%</li>
+    <li>Zwroty po terminie: @ViewBag.LatePercent%</li>
+</ul>

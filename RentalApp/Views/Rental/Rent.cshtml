@@ -18,8 +18,13 @@
                 <td>@e.Name</td>
                 <td>@e.Description</td>
                 <td>
-                    <form asp-action="Rent" method="post" style="display:inline">
+                    <form asp-action="Create" method="post" style="display:inline">
                         <input type="hidden" name="equipmentId" value="@e.Id" />
+                        <select name="rentalPeriod" class="form-select form-select-sm d-inline w-auto mx-1" required>
+                            <option value="1">1 dzień</option>
+                            <option value="7">1 tydzień</option>
+                            <option value="30">1 miesiąc</option>
+                        </select>
                         <button type="submit" class="btn btn-primary btn-sm">Wypożycz</button>
                     </form>
                 </td>

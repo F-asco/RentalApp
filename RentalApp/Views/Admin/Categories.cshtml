@@ -1,0 +1,26 @@
+
+@model IEnumerable<RentalApp.Models.EquipmentCategory>
+@{
+    ViewData["Title"] = "Kategorie sprzętu";
+}
+<h2>@ViewData["Title"]</h2>
+
+<p>
+    <a asp-action="CreateCategory" class="btn btn-success">Dodaj kategorię</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cat in Model)
+        {
+            <tr>
+                <td>@cat.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>

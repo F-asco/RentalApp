@@ -13,7 +13,7 @@
             <th>Użytkownik</th>
             <th>Data wypożyczenia</th>
             <th>Data zwrotu</th>
-            <th>Akcje</th>
+            <th> </th>
         </tr>
     </thead>
     <tbody>
@@ -22,17 +22,54 @@
             <tr>
                 <td>@r.Equipment.Name</td>
                 <td>@r.User.UserName</td>
-                <td>@r.RentedAt.ToLocalTime().ToString("g")</td>
+                <td>@r.RentDate.ToLocalTime().ToString("g")</td>
                 <td>@(r.ReturnedAt.HasValue ? r.ReturnedAt.Value.ToLocalTime().ToString("g") : "-")</td>
                 <td>
-                    @if (!r.ReturnedAt.HasValue)
+                    @if (r.IsCanceled)
                     {
-                        <form asp-action="Return" method="post" style="display:inline">
-                            <input type="hidden" name="id" value="@r.Id" />
-                            <button type="submit" class="btn btn-warning btn-sm">Zwróć</button>
-                        </form>
+                        <span class="text-danger">Anulowane</span>
+                    }
+                    else if (!r.IsApproved)
+                    {
+                        <span class="text-warning">Oczekuje na zatwierdzenie</span>
+                    }
+                    else if (r.IsReturned)
+                    {
+                        <span class="text-success">Zwrócono</span>
+                    }
+                    else if (DateTime.Now > r.DueDate)
+                    {
+                        <span class="text-danger">Po terminie</span>
+                    }
+                    else
+                    {
+                        <span class="text-info">W trakcie</span>
                     }
                 </td>
+                <td>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Pracownik"))
+                    {
+                        if (!r.IsApproved && !r.IsCanceled)
+                        {
+                            <form asp-action="Approve" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button class="btn btn-success btn-sm">Zatwierdź</button>
+                            </form>
+                            <form asp-action="Cancel" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button class="btn btn-danger btn-sm">Anuluj</button>
+                            </form>
+                        }
+                        @if (!r.ReturnedAt.HasValue)
+                        {
+                            <form asp-action="Return" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@r.Id" />
+                                <button type="submit" class="btn btn-warning btn-sm">Zwróć</button>
+                            </form>
+                        }
+                    }
+                </td>
+                
             </tr>
         }
     </tbody>
