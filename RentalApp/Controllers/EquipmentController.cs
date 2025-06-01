@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using RentalApp.Data;
 using RentalApp.DTOs;
 using RentalApp.Services;
 using System.Threading.Tasks;
@@ -10,7 +13,12 @@ namespace RentalApp.Controllers
     public class EquipmentController : Controller
     {
         private readonly EquipmentService _svc;
-        public EquipmentController(EquipmentService svc) => _svc = svc;
+        private readonly ApplicationDbContext _context;
+        public EquipmentController(EquipmentService svc, ApplicationDbContext context)
+        {
+            _svc = svc;
+            _context = context;
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -19,11 +27,29 @@ namespace RentalApp.Controllers
         }
 
         [Authorize(Roles = "Admin,Pracownik")]
-        public IActionResult Create() => View();
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.Categories = new SelectList(
+                await _context.EquipmentCategories.ToListAsync(),
+                "Id",
+                "Name"
+            );
+            return View();
+        }
         [HttpPost]
         public async Task<IActionResult> Create(EquipmentDto dto)
         {
-            if (!ModelState.IsValid) return View(dto);
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = new SelectList(
+                    await _context.EquipmentCategories.ToListAsync(),
+                    "Id",
+                    "Name",
+                    dto.CategoryId 
+                );
+                return View(dto);
+            }
+
             await _svc.CreateAsync(dto);
             return RedirectToAction(nameof(Index));
         }
@@ -60,5 +86,7 @@ namespace RentalApp.Controllers
             await _svc.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
+
+
     }
 }

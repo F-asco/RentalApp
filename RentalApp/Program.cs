@@ -43,6 +43,8 @@ app.UseAuthorization();
 // Seed danych
 using (var scope = app.Services.CreateScope())
 {
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate(); 
     await SeedData.Initialize(
         scope.ServiceProvider,
         roles: new[] { "Admin", "Pracownik", "U¿ytkownik" },

@@ -8,7 +8,7 @@ namespace RentalApp.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Nazwa kategorii jest wymagana.")]
         public string Name { get; set; }
 
         public ICollection<Equipment> Equipment { get; set; }

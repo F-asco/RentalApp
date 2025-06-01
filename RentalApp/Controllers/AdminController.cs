@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RentalApp.Data;
 using RentalApp.Models;
 using System.Linq;
@@ -14,13 +15,14 @@ namespace RentalApp.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
-        public AdminController(ApplicationDbContext db)
+
+        // ✅ Jeden wspólny konstruktor z trzema zależnościami
+        public AdminController(
+            ApplicationDbContext db,
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager)
         {
             _db = db;
-        }
-
-        public AdminController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
-        {
             _userManager = userManager;
             _roleManager = roleManager;
         }
@@ -87,12 +89,75 @@ namespace RentalApp.Controllers
 
         public IActionResult Categories() => View(_db.EquipmentCategories.ToList());
 
-        public IActionResult CreateCategory() => View();
+        public IActionResult CreateCategory()
+        {
+            return View(new EquipmentCategory()); 
+        }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateCategory(EquipmentCategory cat)
         {
+            if (!ModelState.IsValid)
+                return View(cat);
+
+            // Unikalność
+            if (_db.EquipmentCategories.Any(c => c.Name == cat.Name))
+            {
+                ModelState.AddModelError("Name", "Taka kategoria już istnieje.");
+                return View(cat);
+            }
+
             _db.EquipmentCategories.Add(cat);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Categories");
+        }
+
+        [HttpGet]
+        public IActionResult EditCategory(int id)
+        {
+            var category = _db.EquipmentCategories.Find(id);
+            if (category == null) return NotFound();
+            return View("CreateCategory", category);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCategory(EquipmentCategory cat)
+        {
+            if (!ModelState.IsValid)
+                return View("CreateCategory", cat);
+
+            // Walidacja unikalności
+            bool exists = _db.EquipmentCategories
+                .Any(c => c.Id != cat.Id && c.Name.ToLower() == cat.Name.ToLower());
+
+            if (exists)
+            {
+                ModelState.AddModelError("Name", "Taka kategoria już istnieje.");
+                return View("CreateCategory", cat);
+            }
+
+            _db.EquipmentCategories.Update(cat);
+            await _db.SaveChangesAsync();
+            return RedirectToAction("Categories");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = _db.EquipmentCategories
+                .Include(c => c.Equipment)
+                .FirstOrDefault(c => c.Id == id);
+
+            if (category == null) return NotFound();
+
+            if (category.Equipment.Any())
+            {
+                TempData["Error"] = "Nie można usunąć kategorii, do której przypisano sprzęt.";
+                return RedirectToAction("Categories");
+            }
+
+            _db.EquipmentCategories.Remove(category);
             await _db.SaveChangesAsync();
             return RedirectToAction("Categories");
         }

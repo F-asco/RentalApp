@@ -1,18 +1,31 @@
 ﻿@model List<RentalApp.Models.ApplicationUser>
 
-<h2>Użytkownicy</h2>
-<table>
-    <tr>
-        <th>Email</th>
-        <th>Akcje</th>
-    </tr>
-    @foreach (var user in Model)
-    {
+
+<h3>👥 Użytkownicy</h3>
+<table class="table table-striped">
+    <thead>
         <tr>
-            <td>@user.Email</td>
-            <td>
-                <a asp-action="ManageRoles" asp-route-userId="@user.Id">Zarządzaj rolami</a>
-            </td>
+            <th>Email</th>
+            <th>Akcja</th>
         </tr>
-    }
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>
+                    <a asp-action="ManageRoles" asp-route-userId="@user.Id" class="btn btn-primary btn-sm">
+                        Zarządzaj rolami
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
 </table>
+
+
+<ul>
+    <li><a asp-action="Dashboard">📊 Statystyki wypożyczeń</a></li>
+    <li><a asp-action="Categories">📂 Kategorie sprzętu</a></li>
+</ul>

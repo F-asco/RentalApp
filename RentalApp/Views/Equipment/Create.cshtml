@@ -14,8 +14,11 @@
     </div>
 
     <div class="form-group">
-        <label>Kategoria</label>
-        <input asp-for="Category" class="form-control" />
+        <label asp-for="CategoryId" class="control-label">Kategoria</label>
+        <select asp-for="CategoryId" class="form-control" asp-items="@(ViewBag.Categories as SelectList)">
+            <option value="">-- Wybierz kategorię --</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
