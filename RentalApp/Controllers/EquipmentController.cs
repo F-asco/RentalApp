@@ -24,7 +24,7 @@ namespace RentalApp.Controllers
         {
             var equipment = _context.Equipment.Include(e => e.Category).AsQueryable();
 
-            // Filtrowanie
+            
             if (!string.IsNullOrEmpty(searchName))
                 equipment = equipment.Where(e => e.Name.Contains(searchName));
 
@@ -34,7 +34,7 @@ namespace RentalApp.Controllers
             if (availableOnly == true)
                 equipment = equipment.Where(e => e.IsAvailable);
 
-            // Sortowanie
+            
             ViewBag.NameSort = sortOrder == "name" ? "name_desc" : "name";
             ViewBag.DateSort = sortOrder == "date" ? "date_desc" : "date";
 

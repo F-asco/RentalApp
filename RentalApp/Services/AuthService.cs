@@ -22,7 +22,7 @@ namespace RentalApp.Services
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (result.Succeeded)
             {
-                // Domyœlnie przypisz u¿ytkownika do roli "User"
+              
                 await _userManager.AddToRoleAsync(user, "U¿ytkownik");
             }
             return result;

@@ -16,7 +16,7 @@ namespace RentalApp.Controllers
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
 
-        // ✅ Jeden wspólny konstruktor z trzema zależnościami
+       
         public AdminController(
             ApplicationDbContext db,
             UserManager<ApplicationUser> userManager,
@@ -115,37 +115,6 @@ namespace RentalApp.Controllers
             await _db.SaveChangesAsync();
             return RedirectToAction("Categories");
         }
-
-
-
-        public async Task<IActionResult> EditCategory(int id)
-        {
-            var cat = await _db.EquipmentCategories.FindAsync(id);
-            if (cat == null) return NotFound();
-            return View("CreateCategory", cat);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> EditCategory(EquipmentCategory cat)
-        {
-            if (_db.EquipmentCategories.Any(c => c.Name == cat.Name && c.Id != cat.Id))
-            {
-                ModelState.AddModelError("Name", "Taka kategoria już istnieje.");
-                return View("CreateCategory", cat);
-            }
-
-            if (!ModelState.IsValid)
-                return View("CreateCategory", cat);
-
-            var existing = await _db.EquipmentCategories.FindAsync(cat.Id);
-            if (existing == null) return NotFound();
-
-            existing.Name = cat.Name;
-            await _db.SaveChangesAsync();
-
-            return RedirectToAction("Categories");
-        }
-
 
         [HttpPost]
         public async Task<IActionResult> DeleteCategory(int id)

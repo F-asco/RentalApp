@@ -24,9 +24,9 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item"><a class="nav-link" asp-controller="Equipment" asp-action="Index">Sprzęt</a></li>
                         <li class="nav-item"><a class="nav-link" asp-controller="Rental" asp-action="Index">Wypożyczenia</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Zaloguj się</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Rejestracja</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Logout">Wyloguj się</a></li>
                         @if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                         {
                             <li class="nav-item"><a class="nav-link" asp-controller="Admin" asp-action="Index">Panel Administratora</a></li>

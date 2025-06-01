@@ -20,7 +20,7 @@ namespace RentalApp.Controllers
             _equipmentService = equipmentService;
         }
 
-        // Widok wszystkich wypożyczeń (dla pracownika/admina) lub tylko swoich (dla użytkownika)
+        
         public async Task<IActionResult> Index()
         {
             if (User.IsInRole("Admin") || User.IsInRole("Pracownik"))
@@ -36,14 +36,14 @@ namespace RentalApp.Controllers
             }
         }
 
-        // Formularz wypożyczenia sprzętu
+        
         public async Task<IActionResult> Rent()
         {
             var equipmentList = await _equipmentService.GetAllAsync();
             return View(equipmentList);
         }
 
-        // Obsługa wypożyczenia (dla użytkownika/pracownika/admina)
+        
         [HttpPost]
         [Authorize(Roles = "Użytkownik,Pracownik,Admin")]
         public async Task<IActionResult> Create(int equipmentId, int rentalPeriod)
@@ -69,7 +69,7 @@ namespace RentalApp.Controllers
             return RedirectToAction("MyRentals");
         }
 
-        // Lista wypożyczeń zalogowanego użytkownika
+        
         public async Task<IActionResult> MyRentals()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -77,7 +77,7 @@ namespace RentalApp.Controllers
             return View("Index", rentals);
         }
 
-        // Zwracanie sprzętu
+        
         [HttpPost]
         public async Task<IActionResult> Return(int id)
         {

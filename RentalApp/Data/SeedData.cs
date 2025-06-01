@@ -19,7 +19,7 @@ namespace RentalApp.Data
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Usuwanie niepotrzebnych ról
+            
             var existingRoles = roleManager.Roles.ToList();
             foreach (var role in existingRoles)
             {
@@ -29,14 +29,14 @@ namespace RentalApp.Data
                 }
             }
 
-            // Tworzenie ról
+            
             foreach (var role in roles)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                     await roleManager.CreateAsync(new IdentityRole(role));
             }
 
-            // Tworzenie użytkowników
+            
             var admin = await userManager.FindByEmailAsync(adminEmail);
             if (admin == null)
             {
@@ -61,7 +61,7 @@ namespace RentalApp.Data
                 await userManager.AddToRoleAsync(client, "Użytkownik");
             }
 
-            // Kategorie sprzętu
+            
             var categories = new[] { "Narty", "Piłki", "Łyżwy" };
             foreach (var name in categories)
             {
@@ -72,12 +72,12 @@ namespace RentalApp.Data
             }
             await context.SaveChangesAsync();
 
-            // Pobierz kategorie z bazy
+            
             var narty = context.EquipmentCategories.FirstOrDefault(c => c.Name == "Narty");
             var pilki = context.EquipmentCategories.FirstOrDefault(c => c.Name == "Piłki");
             var obuwie = context.EquipmentCategories.FirstOrDefault(c => c.Name == "Łyżwy");
 
-            // Dodaj sprzęt
+            
             if (!context.Equipment.Any())
             {
                 context.Equipment.AddRange(new List<Equipment>
@@ -90,7 +90,7 @@ namespace RentalApp.Data
                 await context.SaveChangesAsync();
             }
 
-            // Dodaj wypożyczenia
+            
             if (!context.Rentals.Any())
             {
                 var eq1 = context.Equipment.FirstOrDefault(e => e.Name.Contains("Narty"));
